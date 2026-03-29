@@ -13,7 +13,7 @@ const ContactSection = () => {
       return;
     }
 
-    const formspreeId = import.meta.env.VITE_FORMSPREE_ID || "xoqgrrjj";
+    const formspreeId = import.meta.env.VITE_FORMSPREE_ID || "mgopagwl";
     const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
       method: "POST",
       body: data,
