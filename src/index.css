@@ -79,6 +79,11 @@
     background: var(--color-ln-lime);
   }
 
+  /* ── Force Font Awesome Font Family ── */
+  .fa-solid, .fas { font-family: "Font Awesome 6 Free" !important; font-weight: 900 !important; }
+  .fa-brands, .fab { font-family: "Font Awesome 6 Brands" !important; }
+  .fa-regular, .far { font-family: "Font Awesome 6 Free" !important; font-weight: 400 !important; }
+
   /* ── Respect prefers-reduced-motion ── */
   @media (prefers-reduced-motion: reduce) {
     *, ::before, ::after {

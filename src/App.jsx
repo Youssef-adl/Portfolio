@@ -7,9 +7,7 @@ import MarqueeSection from './components/MarqueeSection'
 import HorizontalScrollSection from './components/HorizontalScrollSection'
 import SkillsSection from './components/SkillsSection'
 import EducationSection from './components/EducationSection'
-import TestimonialsSection from './components/TestimonialsSection'
 import ContactSection from './components/ContactSection'
-import GenerativeWavyBackground from './components/GenerativeWavyBackground'
 
 /**
  * Main Application Component
@@ -117,19 +115,21 @@ function App() {
           style={{ background: 'rgba(16, 20, 10, 0.88)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(210,255,0,0.05)' }}
           aria-label="Navigation principale"
         >
-          <a href="/" className="font-display text-xl font-700 tracking-tight text-ln-white hover:text-ln-lime transition-colors duration-250 nav-element cursor-pointer uppercase">
+          <a href="#home" className="font-display text-xl font-700 tracking-tight text-ln-white hover:text-ln-lime transition-colors duration-250 nav-element cursor-pointer uppercase">
             ADLANI YOUSSOUF<span className="text-ln-lime">.</span>
           </a>
-          <div className="flex gap-6 md:gap-10 items-center">
+          <div className="flex gap-6 md:gap-8 items-center">
             {[
-              { label: 'Projets', href: '#projets' },
-              { label: 'Skills', href: '#skills' },
-              { label: 'Avis', href: '#testimonials' }
+              { label: 'Home',       href: '#home' },
+              { label: 'About',      href: '#about' },
+              { label: 'Skills',     href: '#skills' },
+              { label: 'Projects',   href: '#projets' },
+              { label: 'Experience', href: '#experience' },
             ].map((link) => (
               <a
                 key={link.label}
                 href={link.href}
-                className="font-display text-[11px] font-600 uppercase tracking-[0.2em] text-ln-white/60 hover:text-ln-white transition-colors duration-250 nav-element hidden sm:block cursor-pointer"
+                className="font-display text-[11px] font-600 uppercase tracking-[0.2em] text-ln-white/60 hover:text-ln-white transition-colors duration-250 nav-element hidden md:block cursor-pointer"
               >
                 {link.label}
               </a>
@@ -147,6 +147,7 @@ function App() {
       <main>
         {/* HERO SECTION */}
         <section
+          id="home"
           aria-label="Hero"
           className="relative h-screen flex items-center overflow-hidden"
           style={{ background: 'linear-gradient(135deg, #12160c 0%, #1a1e12 50%, #0e1208 100%)' }}
@@ -176,7 +177,7 @@ function App() {
               <div className="hero-cta-group">
                 <a href="#contact" className="btn-ln-primary cursor-pointer">Me contacter</a>
                 <a href="/CV_Youssef_Adlani.pdf" download className="btn-ln-ghost flex items-center gap-2 cursor-pointer">
-                  CV <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                  CV <i className="fa-solid fa-download text-[10px]"></i>
                 </a>
               </div>
             </div>
@@ -208,32 +209,7 @@ function App() {
         <EducationSection />
         <HorizontalScrollSection />
         
-        {/* ── Artistic Identity Section (Digital Poster) ── */}
-        <section className="relative min-h-[80vh] flex items-center justify-center bg-ln-dark-green overflow-hidden py-24 border-y border-ln-lime/10">
-          <GenerativeWavyBackground />
-          <div className="relative z-10 text-center px-6">
-            <span className="ln-label mb-8">Esthétique & Identité</span>
-            <h2 className="font-impact text-[12vw] md:text-[10vw] leading-none text-ln-white uppercase opacity-90 mix-blend-difference mb-6">
-              Design <span className="text-ln-lime">Organique</span>
-            </h2>
-            <div className="max-w-xl mx-auto">
-              <p className="font-body text-ln-white/60 text-base md:text-lg leading-relaxed mb-10">
-                Inspiré par la fluidité des formes naturelles et la rigueur du Bauhaus. 
-                Ce motif génératif reflète ma philosophie de développement : un équilibre entre structure technique et interface vivante.
-              </p>
-              <div className="flex justify-center gap-4">
-                <div className="h-16 w-[1px] bg-ln-lime opacity-40"></div>
-                <div className="h-16 w-[1px] bg-ln-lime opacity-20 transform translate-y-4"></div>
-              </div>
-            </div>
-          </div>
 
-          {/* Decorative Corner Marks */}
-          <div className="absolute top-10 left-10 w-20 h-20 border-t border-l border-ln-lime/30 pointer-events-none"></div>
-          <div className="absolute bottom-10 right-10 w-20 h-20 border-b border-r border-ln-lime/30 pointer-events-none"></div>
-        </section>
-
-        <TestimonialsSection />
         <ContactSection />
       </main>
 

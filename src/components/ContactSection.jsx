@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Mail, Github, Linkedin, Send, MapPin } from 'lucide-react';
 
 const ContactSection = () => {
   const [formStatus, setFormStatus] = useState(null);
@@ -9,8 +8,13 @@ const ContactSection = () => {
     const form = e.target;
     const data = new FormData(form);
     
-    // Using a placeholder Formspree ID. User should replace with their own.
-    const response = await fetch("https://formspree.io/f/xoqgrrjj", {
+    // Bot protection (honeypot)
+    if (data.get("_gotcha")) {
+      return;
+    }
+
+    const formspreeId = import.meta.env.VITE_FORMSPREE_ID || "xoqgrrjj";
+    const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
       method: "POST",
       body: data,
       headers: {
@@ -47,7 +51,7 @@ const ContactSection = () => {
             <div className="flex flex-col gap-8">
               <div className="flex items-center gap-5 group">
                 <div className="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 group-hover:border-ln-lime/50 transition-colors duration-500">
-                  <Mail className="w-5 h-5 text-ln-lime" />
+                  <i className="fa-solid fa-envelope text-ln-lime"></i>
                 </div>
                 <div>
                   <p className="font-display text-[10px] uppercase tracking-widest text-white/30 mb-1">Email</p>
@@ -57,7 +61,7 @@ const ContactSection = () => {
 
               <div className="flex items-center gap-5 group">
                 <div className="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 group-hover:border-ln-lime/50 transition-colors duration-500">
-                  <MapPin className="w-5 h-5 text-ln-lime" />
+                  <i className="fa-solid fa-location-dot text-ln-lime"></i>
                 </div>
                 <div>
                   <p className="font-display text-[10px] uppercase tracking-widest text-white/30 mb-1">Localisation</p>
@@ -67,10 +71,10 @@ const ContactSection = () => {
 
               <div className="flex gap-4 mt-4">
                 <a href="https://github.com/Youssef-adl" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center border border-white/10 bg-white/5 hover:border-ln-lime hover:text-ln-lime transition-all duration-300">
-                  <Github className="w-4 h-4" />
+                  <i className="fa-brands fa-github text-sm"></i>
                 </a>
                 <a href="#" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center border border-white/10 bg-white/5 hover:border-ln-lime hover:text-ln-lime transition-all duration-300">
-                  <Linkedin className="w-4 h-4" />
+                  <i className="fa-brands fa-linkedin-in text-sm"></i>
                 </a>
               </div>
             </div>
@@ -100,8 +104,11 @@ const ContactSection = () => {
                 <textarea required name="message" id="message" rows="5" placeholder="Votre message ici..." className="bg-white/5 border border-white/10 p-4 text-white focus:border-ln-lime outline-none transition-colors duration-300 resize-none"></textarea>
               </div>
 
+              {/* Honeypot field - Hidden from users */}
+              <input type="text" name="_gotcha" style={{ display: 'none' }} />
+
               <button type="submit" className="btn-ln-primary w-full flex items-center justify-center gap-3 py-4 mt-4 uppercase text-[10px] tracking-[0.3em] font-700">
-                Envoyer <Send className="w-3.5 h-3.5" />
+                Envoyer <i className="fa-solid fa-paper-plane text-[10px]"></i>
               </button>
 
               {formStatus && (

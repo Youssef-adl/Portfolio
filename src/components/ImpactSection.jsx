@@ -1,90 +1,127 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-/**
- * @typedef {Object} ImpactStat
- * @property {string} label - Statistic label.
- * @property {string} value - Statistic value (e.g., "99%", "2s").
- * @property {string} desc - Statistic description.
- */
+gsap.registerPlugin(ScrollTrigger);
 
-/**
- * ImpactSection
- * Showcases the tangible technical impact and performance achievements of the developer.
- * 
- * @returns {JSX.Element} The rendered impact section.
- */
 const ImpactSection = () => {
-  return (
-    <section id="about" className="py-24 md:py-36 bg-ln-dark-green overflow-hidden" aria-label="About">
-      <div className="ln-container">
-        <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+  const sectionRef = useRef(null);
+  const gridRef = useRef(null);
 
-          {/* Image Column */}
-          <div className="w-full lg:w-5/12 relative aspect-square group flex-shrink-0">
-            <div className="absolute inset-0 bg-ln-lime overflow-hidden rounded-2xl">
-              <img
-                src="/images/hero.png"
-                alt="Youssouf Adlani — Developer portrait"
-                className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-100 transition-[filter] duration-700"
-              />
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Reveal cards on scroll
+      gsap.from(".bento-card", {
+        y: 50,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: gridRef.current,
+          start: "top 80%",
+        }
+      });
+
+      // Subtle float animation for the hero card
+      gsap.to(".hero-glow", {
+        x: "random(-20, 20)",
+        y: "random(-20, 20)",
+        duration: 5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section 
+      ref={sectionRef}
+      id="about" 
+      className="py-24 px-6 md:px-12 bg-ln-dark-green text-ln-off-white overflow-hidden"
+    >
+      <div className="max-w-7xl mx-auto">
+        {/* Section Header */}
+        <div className="mb-16">
+          <h2 className="text-ln-lime font-impact text-5xl md:text-7xl uppercase tracking-tighter leading-none mb-4">
+            Impact <span className="text-ln-off-white/20">&</span> Profil
+          </h2>
+          <div className="h-1 w-24 bg-ln-lime" />
+        </div>
+
+        {/* Bento Grid */}
+        <div 
+          ref={gridRef}
+          className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[180px]"
+        >
+          {/* Card 1: Main Bio (Large) */}
+          <div className="md:col-span-3 md:row-span-2 bento-card ln-glass-grain p-8 rounded-3xl flex flex-col justify-between group overflow-hidden">
+            <div className="hero-glow ln-bento-hero-glow -top-20 -left-20" />
+            <div className="relative z-10">
+              <span className="text-ln-lime font-mono text-sm uppercase tracking-widest mb-4 block">Bio / Vision</span>
+              <p className="text-2xl md:text-4xl font-space font-medium leading-snug">
+                Passionné par l'innovation technologique, avec un profil hybride mêlant <span className="text-ln-lime">rigueur technique</span> et empathie utilisateur. Spécialisé dans les architectures <span className="italic">Web Modernes</span>.
+              </p>
             </div>
-            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-ln-lime opacity-50" aria-hidden="true" />
-            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-ln-lime opacity-50" aria-hidden="true" />
+            <div className="relative z-10 mt-auto flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full border border-ln-lime/30 flex items-center justify-center group-hover:bg-ln-lime transition-colors duration-500">
+                <i className="fa-solid fa-arrow-right-long text-ln-lime group-hover:text-ln-dark-green transition-colors"></i>
+              </div>
+              <span className="font-mono text-xs uppercase tracking-tighter opacity-50">Prêt pour de nouveaux défis</span>
+            </div>
           </div>
 
-          {/* Text Column */}
-          <div className="w-full lg:w-7/12">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="ln-divider" aria-hidden="true" />
-              <span className="ln-label">À Propos de Moi</span>
-            </div>
-
-            <h2 className="font-impact text-5xl md:text-6xl lg:text-7xl font-400 mb-8 leading-none tracking-tight text-ln-white uppercase">
-              Développeur<br />
-              <span className="text-ln-lime">Full Stack</span>
-            </h2>
-
-            <p className="font-display text-ln-white/60 text-base md:text-lg leading-relaxed mb-10 max-w-lg uppercase tracking-tight">
-              Passionné par le Clean Code et l'innovation technologique. 
-              Spécialisé dans la création d'interfaces performantes et bien architecturées, 
-              combinant une maîtrise rigoureuse de React 19, Node.js et PHP avec un sens aigu du design (inspiration Bauhaus).
-            </p>
-
-            {/* Skills grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-8 border-t border-ln-white/10 mb-10">
-              <div>
-                <p className="ln-label mb-3">Front-end</p>
-                <p className="font-display text-ln-white/60 text-[10px] uppercase tracking-widest leading-relaxed">React 19, Vite, JavaScript (ES6+), HTML5, CSS3, Bootstrap 5</p>
-              </div>
-              <div>
-                <p className="ln-label mb-3">Backend</p>
-                <p className="font-display text-ln-white/60 text-[10px] uppercase tracking-widest leading-relaxed">Node.js, PHP, Python, RESTful APIs, Google OAuth 2.0, PayPal SDK</p>
-              </div>
-              <div>
-                <p className="ln-label mb-3">Bases de données</p>
-                <p className="font-display text-ln-white/60 text-[10px] uppercase tracking-widest leading-relaxed">MySQL, MongoDB</p>
-              </div>
-              <div>
-                <p className="ln-label mb-3">Outils</p>
-                <p className="font-display text-ln-white/60 text-[10px] uppercase tracking-widest leading-relaxed">Git/GitHub, VS Code, Agile (Scrum/Kanban)</p>
+          {/* Card 2: Education (Medium) */}
+          <div className="md:col-span-1 md:row-span-2 bento-card ln-glass-grain p-6 rounded-3xl flex flex-col border-white/5 bg-white/[0.02]">
+            <span className="text-ln-lime font-mono text-sm uppercase mb-4 block">Formation</span>
+            <div className="mt-2">
+              <h3 className="text-xl font-space font-bold mb-1">ISTA Témara</h3>
+              <p className="text-sm opacity-60 font-mono">Dév. Digital / 2024 — 2026</p>
+              <div className="mt-6 space-y-4">
+                <div className="p-3 rounded-xl bg-white/5 border border-white/5">
+                  <span className="block text-[10px] uppercase opacity-40 mb-1">Status</span>
+                  <span className="text-sm font-medium">Diplôme en cours</span>
+                </div>
+                <div className="p-3 rounded-xl bg-white/5 border border-white/5">
+                  <span className="block text-[10px] uppercase opacity-40 mb-1 flex items-center gap-2">
+                    <i className="fa-solid fa-shield-halved text-[8px] text-ln-lime"></i> Spec.
+                  </span>
+                  <span className="text-sm font-medium">Full-Stack JS/PHP</span>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Stats */}
-            <div className="flex gap-10 mb-10">
-              <div>
-                <p className="font-display text-4xl font-700 text-ln-lime">2</p>
-                <p className="font-display text-ln-white/40 text-[9px] uppercase tracking-widest mt-1">Grands Projets</p>
-              </div>
-              <div>
-                <p className="font-display text-4xl font-700 text-ln-white">2026</p>
-                <p className="font-display text-ln-white/40 text-[9px] uppercase tracking-widest mt-1">Diplôme ISTA (En cours)</p>
+          {/* Card 3: Metrics (Small) */}
+          <div className="md:col-span-1 bento-card ln-glass-grain p-6 rounded-3xl flex flex-col justify-center items-center text-center">
+            <span className="text-4xl font-impact text-ln-lime">2+</span>
+            <span className="text-[10px] uppercase tracking-widest opacity-60 mt-2">Projets Majeurs</span>
+          </div>
+
+          {/* Card 4: Tech Highlight (Small) */}
+          <div className="md:col-span-1 bento-card ln-glass-grain p-6 rounded-3xl flex flex-col justify-center items-center text-center">
+            <span className="text-4xl font-impact text-blue-400">R19</span>
+            <span className="text-[10px] uppercase tracking-widest opacity-60 mt-2">React Architecture</span>
+          </div>
+
+          {/* Card 5: Core Stack (Medium Width) */}
+          <div className="md:col-span-2 bento-card ln-glass-grain p-6 rounded-3xl flex items-center justify-between group">
+            <div>
+              <span className="text-ln-lime font-mono text-sm uppercase mb-2 block">Core Stack</span>
+              <div className="flex gap-2 mt-3">
+                {['Node.js', 'Python', 'MySQL', 'MongoDB'].map(tech => (
+                  <span key={tech} className="px-2 py-1 rounded bg-white/5 border border-white/10 text-[10px] font-mono">
+                    {tech}
+                  </span>
+                ))}
               </div>
             </div>
-
-            <a href="#contact" className="btn-ln-primary">
-              Me Contacter
-            </a>
+            <div className="text-right">
+              <span className="text-2xl font-impact opacity-20 group-hover:opacity-100 transition-opacity duration-700">2026</span>
+            </div>
           </div>
 
         </div>

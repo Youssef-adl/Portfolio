@@ -12,6 +12,7 @@
     "vite": "^6.0.0"
   },
   "dependencies": {
+    "@fortawesome/react-fontawesome": "^3.3.0",
     "@splinetool/react-spline": "^4.1.0",
     "@studio-freight/lenis": "^1.0.42",
     "@vitejs/plugin-react": "^4.3.4",

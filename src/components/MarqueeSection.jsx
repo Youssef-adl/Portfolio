@@ -2,9 +2,11 @@ import React from 'react';
 
 const MarqueeSection = () => {
   const keywords = [
-    'React', 'Node.js', 'Laravel', 'TypeScript', 'PHP',
-    'MySQL', 'MongoDB', 'Python', 'Vue.js', 'Git'
+    'React 19', 'Node.js', 'PHP / Laravel', 'Python', 'MySQL',
+    'MongoDB', 'Tailwind CSS', 'Vite', 'Git', 'GSAP',
+    'Three.js', 'Spline', 'PayPal SDK', 'Google OAuth 2.0'
   ];
+
 
   return (
     <section
