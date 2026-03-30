@@ -67,8 +67,10 @@ const ImpactSection = () => {
               </p>
             </div>
             <div className="relative z-10 mt-auto flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full border border-ln-lime/30 flex items-center justify-center group-hover:bg-ln-lime transition-colors duration-500">
-                <i className="fa-solid fa-arrow-right-long text-ln-lime group-hover:text-ln-dark-green transition-colors"></i>
+              <div className="w-12 h-12 rounded-full border border-ln-lime/30 flex items-center justify-center group-hover:bg-ln-lime transition-all duration-500 group-hover:border-ln-lime">
+                <svg className="w-5 h-5 text-ln-lime group-hover:text-ln-dark-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
               </div>
               <span className="font-mono text-xs uppercase tracking-tighter opacity-50">Prêt pour de nouveaux défis</span>
             </div>
@@ -87,7 +89,7 @@ const ImpactSection = () => {
                 </div>
                 <div className="p-3 rounded-xl bg-white/5 border border-white/5">
                   <span className="block text-[10px] uppercase opacity-40 mb-1 flex items-center gap-2">
-                    <i className="fa-solid fa-shield-halved text-[8px] text-ln-lime"></i> Spec.
+                    <svg className="w-2.5 h-2.5 text-ln-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg> Spec.
                   </span>
                   <span className="text-sm font-medium">Full-Stack JS/PHP</span>
                 </div>

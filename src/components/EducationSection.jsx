@@ -57,7 +57,13 @@ const InterestChip = ({ icon, label }) => {
         boxShadow: hov ? '0 8px 20px rgba(210,255,0,0.08)' : 'none',
       }}
     >
-      <i className={`fa-solid ${icon} text-xs leading-none`}></i>
+      {icon === 'fa-microchip' && <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg>}
+      {icon === 'fa-code-branch' && <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h1M8 7H6a2 2 0 00-2 2v2a2 2 0 002 2h1M18 15v2a2 2 0 01-2 2h-1m2-2h-1" /></svg>}
+      {icon === 'fa-users-between-lines' && <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>}
+      {icon === 'fa-bolt-lightning' && <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>}
+      {icon === 'fa-gamepad' && <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 10l-2 2m0 0l2 2m-2-2h4.5M18 10l2 2m0 0l-2 2m2-2h-4.5M12 12m-4.5 0c0-2.485 2.015-4.5 4.5-4.5s4.5 2.015 4.5 4.5-2.015 4.5-4.5 4.5-4.5-2.015-4.5-4.5zM12 12v0" /></svg>}
+      {icon === 'fa-person-swimming' && <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>} { /* Placeholder swim */ }
+      {icon === 'fa-mountain-sun' && <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 21h18M3 10l6-6 6 6m-5 0l5 5 5-5" /></svg>}
       <span
         className="font-display text-[10px] font-700 uppercase tracking-[0.15em] transition-colors duration-300"
         style={{ color: hov ? '#D2FF00' : 'rgba(255,255,255,0.45)' }}
@@ -125,7 +131,16 @@ const TimelineItem = ({ item, index, total }) => {
         }}
         aria-hidden="true"
       >
-        <i className={`fa-solid ${item.icon} text-sm`}></i>
+        {item.icon === 'fa-graduation-cap' && (
+          <svg className="w-5 h-5 text-ln-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 14zm0 0v7m-7-7a12.083 12.083 0 01.665-6.479L12 14l-5.335 2.521A12.083 12.083 0 005 21V14z" />
+          </svg>
+        )}
+        {item.icon === 'fa-scroll' && (
+          <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        )}
       </div>
 
       {/* Card */}
@@ -200,7 +215,7 @@ const EducationSection = () => (
         {/* LEFT — Timeline */}
         <div className="reveal-on-scroll flex flex-col">
           <div className="flex items-center gap-3 mb-8">
-            <i className="fa-solid fa-book-open text-xs text-ln-lime"></i>
+            <svg className="w-4 h-4 text-ln-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
             <span className="font-display text-[10px] uppercase tracking-[0.3em] text-white/40">Éducation</span>
           </div>
 
@@ -217,7 +232,7 @@ const EducationSection = () => (
           {/* Languages */}
           <div className="reveal-on-scroll">
             <div className="flex items-center gap-3 mb-8">
-              <i className="fa-solid fa-language text-xs text-ln-lime"></i>
+              <svg className="w-4 h-4 text-ln-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5c-1.383 4.417-4.14 8.167-7.751 11" /></svg>
               <span className="font-display text-[10px] uppercase tracking-[0.3em] text-white/40">Langues</span>
             </div>
             <div
@@ -236,7 +251,7 @@ const EducationSection = () => (
           {/* Interests */}
           <div className="reveal-on-scroll">
             <div className="flex items-center gap-3 mb-8">
-              <i className="fa-solid fa-heart text-xs text-ln-lime"></i>
+              <svg className="w-4 h-4 text-ln-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
               <span className="font-display text-[10px] uppercase tracking-[0.3em] text-white/40">Centres d'intérêt</span>
             </div>
             <div className="flex flex-wrap gap-2">

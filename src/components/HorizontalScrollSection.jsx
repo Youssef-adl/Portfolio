@@ -162,7 +162,7 @@ const HorizontalScrollSection = () => {
                   </div>
 
                   <div className="absolute top-6 left-6 z-20" aria-hidden="true">
-                    <span className="text-ln-lime font-impact text-6xl md:text-8xl font-700 opacity-10">0{index + 1}</span>
+                    <span className="text-ln-lime font-impact text-5xl md:text-7xl font-700 opacity-[0.07]">0{index + 1}</span>
                   </div>
 
                   {/* Overlay on hover */}
@@ -174,26 +174,29 @@ const HorizontalScrollSection = () => {
 
                 {/* Project Info */}
                 <div className="w-full lg:w-[50%] lg:py-8 reveal-on-scroll relative">
-                  <div className="flex items-center gap-4 mb-8">
-                    <span className="text-ln-lime font-mono text-sm leading-none opacity-50 tracking-widest uppercase">{project.year}</span>
-                    <div className="h-[2px] w-12 bg-ln-lime/20" />
-                    <div className="flex flex-wrap gap-2">
+                  <div className="flex items-center gap-4 mb-6">
+                    <span className="text-ln-lime font-mono text-xs leading-none opacity-50 tracking-widest uppercase">{project.year}</span>
+                    <span className="block text-[10px] uppercase opacity-40 mb-1 flex items-center gap-2">
+                      <svg className="w-2.5 h-2.5 text-ln-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg> Spec.
+                    </span>
+                    <div className="h-[1px] w-12 bg-ln-lime/20" />
+                    <div className="flex flex-wrap gap-1.5">
                       {project.techs.map((t) => (
-                        <span key={t} className="px-2 py-1 bg-white/5 border border-white/10 text-[9px] font-mono text-white/40 uppercase tracking-tighter">
+                        <span key={t} className="px-2 py-0.5 bg-white/5 border border-white/10 text-[8px] font-mono text-white/40 uppercase tracking-tighter">
                           {t}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <h3 className="font-impact text-5xl md:text-7xl lg:text-8xl text-ln-white leading-[0.9] tracking-tighter uppercase mb-8">
+                  <h3 className="font-impact text-ln-white leading-[0.9] tracking-tighter uppercase mb-6 w-full lg:min-w-[500px]" style={{ fontSize: 'clamp(2.5rem, 6vw, 4.2rem)' }}>
                     {project.title.split(' (')[0]}
                     {project.title.includes(' (') && (
-                      <span className="block text-ln-lime opacity-30 text-3xl md:text-4xl mt-2">({project.title.split(' (')[1]}</span>
+                      <span className="block text-ln-lime/30 mt-2" style={{ fontSize: 'clamp(1rem, 2vw, 1.8rem)' }}>({project.title.split(' (')[1]}</span>
                     )}
                   </h3>
 
-                  <p className="font-body text-ln-white/50 text-base md:text-lg leading-relaxed mb-10 max-w-xl">
+                  <p className="font-body text-ln-white/50 text-sm md:text-base leading-relaxed mb-8 max-w-lg">
                     {project.desc}
                   </p>
 
@@ -202,11 +205,13 @@ const HorizontalScrollSection = () => {
                       href={project.demo}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center gap-4 text-ln-lime font-impact text-xl uppercase tracking-widest hover:text-white transition-colors"
+                      className="group flex items-center gap-4 text-ln-lime font-impact text-lg uppercase tracking-widest hover:text-white transition-colors"
                     >
                       <span>Explore Demo</span>
-                      <div className="w-12 h-12 rounded-full border border-ln-lime/20 flex items-center justify-center group-hover:border-white transition-colors">
-                        <i className="fa-solid fa-arrow-right-long text-lg translate-x-px"></i>
+                      <div className="w-12 h-12 rounded-full border border-ln-lime/30 flex items-center justify-center group-hover:bg-ln-lime transition-all duration-500 group-hover:border-ln-lime">
+                        <svg className="w-5 h-5 text-ln-lime group-hover:text-ln-dark-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
                       </div>
                     </a>
                   </div>
