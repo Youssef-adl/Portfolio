@@ -1,0 +1,23 @@
+# pack-refs with: peeled fully-peeled sorted 
+77ffedb28c5362d12a00c929f5c334e7a6559c08 refs/remotes/origin/addyosmani/fix-marketplace-schema
+57f527479d96b1a9d586913a681fff0cd87a5e99 refs/remotes/origin/build-improvements
+9a74159d015c9d4ccc6a077165191c5970cb3f24 refs/remotes/origin/code-simplify
+653e48c6981483da78a1e3a7851be83304ad06e2 refs/remotes/origin/copilot/sub-pr-3
+8fea8b42c18e1970bc0cd6d9b545473df7473eb3 refs/remotes/origin/docs/comparison
+a4ae7518674ccfe6c5cd91353eef49046030e930 refs/remotes/origin/feat/code-review-structural-depth
+12ae36e0d5b1d9d6c77705f98a73f16b97c2d98f refs/remotes/origin/feat/interview-me-skill
+dd142f1da3cdb16c93ff1fd00979f4846ee2253a refs/remotes/origin/feat/skill-evals
+8739c159743540f5ceb05f6c0997f4892a2dc54d refs/remotes/origin/google-swe
+70b7506ce90e200cb47645ddb3f6b8e84fecc047 refs/remotes/origin/main
+2bee9b3842d054f8df81e220c21b207a5d204e33 refs/remotes/origin/orchestration
+cad41cb506dfe56fa45e94f70a74cc6efe0cbf8a refs/remotes/origin/security
+1fa46d25bbb5eb856abf9e96508bf770fb926f01 refs/tags/0.5.0
+^b3e905987490e948667f04d95ab3169236b9c212
+1322f4eeb55aaf01518f0e61f6f2a1503d9abf4f refs/tags/0.6.0
+^19e49a094d79540e635b107cb3490926ddeac7a3
+55ca05a9a1822be57f550c0f5714162735cf8fa6 refs/tags/0.6.1
+^250ffaa6e8ae039e4071f69af623781165d20df7
+2bfb2ae8d4568dc6bdba8062bcbcc5cab75a42b6 refs/tags/0.6.2
+^d187883b7d761265309cdcc0f202cc76b4b3fb06
+b50752be964f5d3e18600142899694db82f639cc refs/tags/0.6.3
+^8c6530305396f341b5da7201cf1f7e390fdb863f

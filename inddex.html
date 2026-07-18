@@ -1,0 +1,793 @@
+
+'<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adlani Youssouf — Développeur Full Stack</title>
+    <meta name="description" content="Portfolio de Adlani Youssouf, Développeur Full Stack React · Next.js · Node.js · ASP.NET · Three.js">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            space: ['Space Grotesk', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              orange: '#FF6B35',
+              dark: '#0A0A0F',
+              surface: '#13131A',
+              card: '#1A1A24',
+              accent: '#FFB347',
+              text: '#F0F0F5',
+              muted: '#8A8A9A',
+            }
+          }
+        }
+      }
+    }
+    </script>
+    <style>
+      body { background: #0A0A0F; overflow-x: hidden; }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #0A0A0F; }
+      ::-webkit-scrollbar-thumb { background: #FF6B35; border-radius: 3px; }
+      .glass {
+        background: rgba(26, 26, 36, 0.6);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 107, 53, 0.1);
+      }
+      .text-glow {
+        text-shadow: 0 0 40px rgba(255,107,53,0.3), 0 0 80px rgba(255,107,53,0.1);
+      }
+      .card-3d {
+        transform-style: preserve-3d;
+        transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .card-3d:hover {
+        transform: translateY(-8px) rotateX(5deg) rotateY(-5deg);
+      }
+      .magnetic-btn {
+        transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .skill-pill {
+        background: linear-gradient(135deg, rgba(255,107,53,0.15), rgba(255,179,71,0.05));
+        border: 1px solid rgba(255,107,53,0.2);
+      }
+      #three-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+      }
+      .content-layer {
+        position: relative;
+        z-index: 1;
+      }
+      .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      .nav-link {
+        position: relative;
+      }
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #FF6B35;
+        transition: width 0.3s ease;
+      }
+      .nav-link:hover::after {
+        width: 100%;
+      }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ─── Three.js Particle Field ───
+    const initThree = () => {
+      const canvas = document.getElementById('three-canvas');
+      if (!canvas) return;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const particleCount = 800;
+      const positions = new Float32Array(particleCount * 3);
+      const colors = new Float32Array(particleCount * 3);
+      const orange = new THREE.Color('#FF6B35');
+      const gold = new THREE.Color('#FFB347');
+      const dark = new THREE.Color('#1A1A24');
+
+      for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 20;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+        const mixColor = Math.random() > 0.6 ? orange : (Math.random() > 0.5 ? gold : dark);
+        colors[i * 3] = mixColor.r;
+        colors[i * 3 + 1] = mixColor.g;
+        colors[i * 3 + 2] = mixColor.b;
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const material = new THREE.PointsMaterial({
+        size: 0.03,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
+      });
+
+      const particles = new THREE.Points(geometry, material);
+      scene.add(particles);
+
+      const shapes = [];
+      const shapeGeometries = [
+        new THREE.TorusGeometry(0.4, 0.15, 8, 20),
+        new THREE.OctahedronGeometry(0.3),
+        new THREE.IcosahedronGeometry(0.25),
+        new THREE.TorusKnotGeometry(0.25, 0.08, 64, 8)
+      ];
+
+      for (let i = 0; i < 6; i++) {
+        const geo = shapeGeometries[i % shapeGeometries.length];
+        const mat = new THREE.MeshBasicMaterial({
+          color: i % 2 === 0 ? '#FF6B35' : '#FFB347',
+          wireframe: true,
+          transparent: true,
+          opacity: 0.15
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(
+          (Math.random() - 0.5) * 15,
+          (Math.random() - 0.5) * 10,
+          (Math.random() - 0.5) * 10 - 5
+        );
+        mesh.userData = {
+          rotSpeed: { x: (Math.random() - 0.5) * 0.01, y: (Math.random() - 0.5) * 0.01 },
+          floatSpeed: Math.random() * 0.002 + 0.001,
+          floatOffset: Math.random() * Math.PI * 2
+        };
+        scene.add(mesh);
+        shapes.push(mesh);
+      }
+
+      camera.position.z = 5;
+
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      });
+
+      let frameId;
+      const animate = () => {
+        frameId = requestAnimationFrame(animate);
+        const time = Date.now() * 0.001;
+
+        particles.rotation.y += 0.0003;
+        particles.rotation.x += 0.0001;
+
+        shapes.forEach((shape) => {
+          shape.rotation.x += shape.userData.rotSpeed.x;
+          shape.rotation.y += shape.userData.rotSpeed.y;
+          shape.position.y += Math.sin(time * shape.userData.floatSpeed * 100 + shape.userData.floatOffset) * 0.002;
+        });
+
+        camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.02;
+        camera.position.y += (-mouseY * 0.5 - camera.position.y) * 0.02;
+        camera.lookAt(scene.position);
+
+        renderer.render(scene, camera);
+      };
+      animate();
+
+      const handleResize = () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      };
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+        cancelAnimationFrame(frameId);
+        window.removeEventListener('resize', handleResize);
+      };
+    };
+
+    // ─── Data ───
+    const PROJECTS = [
+      {
+        title: 'Lexigam',
+        subtitle: 'E-Commerce Premium',
+        year: '2026',
+        stack: ['React 19', 'Node.js', 'MongoDB', 'PayPal SDK', 'Tailwind'],
+        desc: 'E-commerce complet avec 500+ produits, auth sociale, paiements reels PayPal + Stripe, dashboard admin avec analytics temps reel. Temps de chargement < 2s, Lighthouse 95+.',
+        color: 'from-orange-500/20 to-amber-500/20',
+        accent: '#FF6B35',
+        live: '#',
+        github: '#'
+      },
+      {
+        title: 'Solaris Lux',
+        subtitle: 'E-Commerce 3D Premium',
+        year: '2026',
+        stack: ['Next.js', 'Prisma', 'PostgreSQL', 'Three.js', 'Framer Motion'],
+        desc: 'Hero cinematique 3D avec rotation WebGL temps reel a 60fps. Design Bauhaus minimaliste sur bento grid. Tarifs dynamiques, FAQ interactive, note 4.9/5 avis clients.',
+        color: 'from-amber-500/20 to-yellow-500/20',
+        accent: '#FFB347',
+        live: '#',
+        github: '#'
+      },
+      {
+        title: 'BookEase',
+        subtitle: 'Reservation Salon',
+        year: '2026',
+        stack: ['React 19', 'Vite', 'React Router 6', 'Stripe', 'CSS Custom'],
+        desc: 'Stepper de reservation en 4 etapes avec paiement Stripe simule. Dashboard admin avec calendrier hebdomadaire colore, stats du jour. Design "journal/papier" unique.',
+        color: 'from-orange-400/20 to-red-400/20',
+        accent: '#FF8C42',
+        live: '#',
+        github: '#'
+      },
+      {
+        title: 'ECS Informatique',
+        subtitle: 'Site Corporate',
+        year: '2026',
+        stack: ['ASP.NET Core MVC', 'C#', 'Entity Framework', 'Bootstrap', 'jQuery'],
+        desc: 'Site corporate complet pour societe d\'ingenierie IT (1988). Back-office admin : gestion du personnel, offres d\'emploi, demandes, contacts. Clients : Ministere des Finances, Bank Al-Maghrib.',
+        color: 'from-red-500/20 to-orange-500/20',
+        accent: '#E85D04',
+        live: '#',
+        github: '#'
+      }
+    ];
+
+    const SKILLS = [
+      { cat: 'Front-end', items: ['React 19', 'Next.js', 'Vite', 'JavaScript ES6+', 'HTML5', 'CSS3'] },
+      { cat: 'Styling', items: ['Tailwind CSS 4', 'Bootstrap', 'CSS Custom Properties', 'Framer Motion'] },
+      { cat: 'Back-end', items: ['Node.js', 'ASP.NET Core MVC', 'C#', 'PHP', 'Laravel', 'Python'] },
+      { cat: 'Auth & Paiement', items: ['Google OAuth', 'GitHub OAuth', 'PayPal SDK', 'Stripe'] },
+      { cat: 'Bases de donnees', items: ['MongoDB', 'PostgreSQL', 'MySQL', 'Prisma ORM', 'Entity Framework'] },
+      { cat: '3D & Animation', items: ['Three.js', 'WebGL', 'React Three Fiber', 'GSAP', 'Framer Motion'] },
+      { cat: 'DevOps', items: ['Git', 'GitHub', 'VS Code', 'Vercel', 'Replit', 'Agile/Scrum'] },
+      { cat: 'Methodes', items: ['Design Thinking', 'Business Model Canvas', 'MVP'] }
+    ];
+
+    const EXPERIENCE = [
+      {
+        role: 'Developpeur Web — Stage',
+        company: 'ECS Informatique, Rabat',
+        period: '2026',
+        points: [
+          'Developpement du site corporate complet (ASP.NET Core MVC, C#, Entity Framework)',
+          'Back-office admin : gestion du personnel, offres d\'emploi, demandes, contacts',
+          'Clients institutionnels : Ministere des Finances, Bank Al-Maghrib, ANCFCC, Akwa Group',
+          'Animations AOS, carousel Swiper, galerie GLightbox, menu responsive mobile'
+        ]
+      }
+    ];
+
+    const EDUCATION = [
+      {
+        title: 'Technicien Specialise — Developpement Web Full Stack',
+        school: 'ISTA Temara',
+        period: 'Sept 2024 – 2026',
+        desc: 'React 19, Node.js, PHP, MySQL, MongoDB, Git, Bootstrap, Agile/Scrum'
+      },
+      {
+        title: 'Programme d\'Innovation Entrepreneuriale',
+        school: 'ISTA Temara',
+        period: '2025 – 2026',
+        desc: 'Business Model Canvas, Design Thinking, MVP, Marketing digital'
+      },
+      {
+        title: 'Baccalaureat Sciences Physiques',
+        school: 'Lycee Imam El Boukhari, Temara',
+        period: '2024',
+        desc: 'Sciences Physiques'
+      }
+    ];
+
+    // ─── Components ───
+    const Navbar = () => {
+      const [scrolled, setScrolled] = useState(false);
+      useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener('scroll', onScroll);
+        return () => window.removeEventListener('scroll', onScroll);
+      }, []);
+
+      const scrollTo = (id) => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      };
+
+      return (
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'glass py-3' : 'py-6 bg-transparent'}`}>
+          <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+            <div className="font-space text-2xl font-bold text-white tracking-tight">
+              ADLANI<span className="text-brand-orange">.</span>
+            </div>
+            <div className="hidden md:flex items-center gap-8">
+              {['Profil', 'Projets', 'Competences', 'Experience', 'Formation'].map((item) => (
+                <button key={item} onClick={() => scrollTo(item.toLowerCase())} className="nav-link text-sm font-medium text-brand-muted hover:text-white transition-colors">
+                  {item}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-4">
+              <a href="https://github.com" target="_blank" className="text-brand-muted hover:text-white transition-colors">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a href="https://linkedin.com" target="_blank" className="text-brand-muted hover:text-white transition-colors">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>
+            </div>
+          </div>
+        </nav>
+      );
+    };
+
+    const Hero = () => {
+      const textRef = useRef(null);
+
+      useEffect(() => {
+        gsap.fromTo(textRef.current.children,
+          { y: 60, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1, stagger: 0.15, ease: 'power3.out', delay: 0.3 }
+        );
+      }, []);
+
+      return (
+        <section id="profil" className="min-h-screen flex items-center justify-center relative px-6">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div ref={textRef} className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-brand-orange text-sm font-medium">
+                <span className="w-2 h-2 rounded-full bg-brand-orange animate-pulse"></span>
+                Disponible pour opportunites
+              </div>
+              <h1 className="font-space text-5xl md:text-7xl font-bold text-white leading-tight">
+                ADLANI<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-brand-accent text-glow">YOUSSOUF</span>
+              </h1>
+              <p className="text-xl text-brand-muted font-light max-w-lg">
+                Developpeur Full Stack specialise dans les interfaces modernes et immersives.
+                <span className="text-white font-medium"> React 19 · Next.js · Three.js · Node.js · ASP.NET Core</span>
+              </p>
+              <div className="flex flex-wrap gap-4 pt-4">
+                <a href="#projets" className="magnetic-btn px-8 py-4 bg-gradient-to-r from-brand-orange to-brand-accent text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-orange-500/25 transition-all">
+                  Voir mes projets
+                </a>
+                <a href="mailto:youssoufadlani@gmail.com" className="magnetic-btn px-8 py-4 glass text-white font-semibold rounded-xl hover:border-brand-orange/40 transition-all">
+                  Me contacter
+                </a>
+              </div>
+              <div className="flex items-center gap-6 pt-6 text-brand-muted text-sm">
+                <span className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                  +212 77 76 16 514
+                </span>
+                <span className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                  Temara, Maroc
+                </span>
+              </div>
+            </div>
+            <div className="relative flex justify-center">
+              <div className="relative w-80 h-80 md:w-96 md:h-96">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-brand-orange/30 to-brand-accent/10 blur-3xl animate-pulse"></div>
+                <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-brand-orange/20 shadow-2xl shadow-orange-500/10">
+                  <img 
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"
+                    alt="Adlani Youssouf"
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+                <div className="absolute -bottom-4 -right-4 glass px-6 py-3 rounded-2xl">
+                  <div className="text-2xl font-bold text-white">4+</div>
+                  <div className="text-xs text-brand-muted">Projets en production</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    const ProjectCarousel = () => {
+      const trackRef = useRef(null);
+      const [isDragging, setIsDragging] = useState(false);
+      const [startX, setStartX] = useState(0);
+      const [scrollLeft, setScrollLeft] = useState(0);
+
+      const handleMouseDown = (e) => {
+        setIsDragging(true);
+        setStartX(e.pageX - trackRef.current.offsetLeft);
+        setScrollLeft(trackRef.current.scrollLeft);
+      };
+
+      const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - trackRef.current.offsetLeft;
+        const walk = (x - startX) * 2;
+        trackRef.current.scrollLeft = scrollLeft - walk;
+      };
+
+      const handleMouseUp = () => setIsDragging(false);
+
+      return (
+        <section id="projets" className="py-24 relative">
+          <div className="max-w-7xl mx-auto px-6 mb-12">
+            <div className="reveal">
+              <span className="text-brand-orange font-space text-sm font-semibold tracking-widest uppercase">Portfolio</span>
+              <h2 className="font-space text-4xl md:text-5xl font-bold text-white mt-2">Projets Personnels</h2>
+              <p className="text-brand-muted mt-4 max-w-xl">4 projets en production, du e-commerce 3D immersif aux plateformes institutionnelles.</p>
+            </div>
+          </div>
+          
+          <div 
+            ref={trackRef}
+            className="flex gap-6 overflow-x-auto px-6 pb-8 cursor-grab active:cursor-grabbing"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
+            {[...PROJECTS, ...PROJECTS].map((project, idx) => (
+              <div 
+                key={idx}
+                className="flex-shrink-0 w-[400px] md:w-[500px] card-3d"
+                style={{ perspective: '1000px' }}
+              >
+                <div className="glass rounded-3xl p-8 h-full border border-white/5 hover:border-brand-orange/30 transition-all duration-500 group">
+                  <div className="flex items-start justify-between mb-6">
+                    <div>
+                      <span className="text-brand-orange font-space text-sm font-semibold">{project.year}</span>
+                      <h3 className="font-space text-2xl font-bold text-white mt-1 group-hover:text-brand-orange transition-colors">{project.title}</h3>
+                      <p className="text-brand-muted text-sm">{project.subtitle}</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-orange/20 to-brand-accent/10 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-white/80">{project.title[0]}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="h-48 rounded-2xl bg-gradient-to-br from-brand-orange/10 to-brand-accent/5 mb-6 flex items-center justify-center relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0)', backgroundSize: '20px 20px' }}></div>
+                    <span className="font-space text-6xl font-bold text-white/10">{project.title[0]}{project.title[1]}</span>
+                  </div>
+                  
+                  <p className="text-brand-muted text-sm leading-relaxed mb-6">{project.desc}</p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {project.stack.map((tech) => (
+                      <span key={tech} className="skill-pill px-3 py-1 rounded-full text-xs text-brand-orange font-medium">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <button className="flex-1 py-3 bg-brand-orange/10 hover:bg-brand-orange/20 text-brand-orange rounded-xl text-sm font-semibold transition-colors">
+                      Live Demo →
+                    </button>
+                    <button className="flex-1 py-3 glass hover:border-brand-orange/30 text-white rounded-xl text-sm font-semibold transition-colors">
+                      GitHub
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex justify-center gap-2 mt-6">
+            <span className="text-brand-muted text-xs">← Glisser pour explorer →</span>
+          </div>
+        </section>
+      );
+    };
+
+    const Skills = () => {
+      const sectionRef = useRef(null);
+
+      useEffect(() => {
+        const ctx = gsap.context(() => {
+          gsap.fromTo('.skill-card',
+            { y: 50, opacity: 0, rotateX: 15 },
+            {
+              y: 0, opacity: 1, rotateX: 0,
+              duration: 0.8,
+              stagger: 0.1,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: 'top 80%',
+                toggleActions: 'play none none none'
+              }
+            }
+          );
+        });
+        return () => ctx.revert();
+      }, []);
+
+      return (
+        <section id="competences" className="py-24 relative" ref={sectionRef}>
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16 reveal">
+              <span className="text-brand-orange font-space text-sm font-semibold tracking-widest uppercase">Expertise</span>
+              <h2 className="font-space text-4xl md:text-5xl font-bold text-white mt-2">Competences Techniques</h2>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {SKILLS.map((skill) => (
+                <div key={skill.cat} className="skill-card glass rounded-2xl p-6 hover:border-brand-orange/30 transition-all duration-300 group" style={{ transformStyle: 'preserve-3d' }}>
+                  <h3 className="font-space text-lg font-semibold text-white mb-4 group-hover:text-brand-orange transition-colors">{skill.cat}</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {skill.items.map((item) => (
+                      <span key={item} className="px-3 py-1.5 rounded-lg bg-white/5 text-brand-muted text-xs hover:bg-brand-orange/10 hover:text-brand-orange transition-colors cursor-default">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    const Experience = () => {
+      const sectionRef = useRef(null);
+
+      useEffect(() => {
+        const ctx = gsap.context(() => {
+          gsap.fromTo('.exp-item',
+            { x: -30, opacity: 0 },
+            {
+              x: 0, opacity: 1,
+              duration: 0.8,
+              stagger: 0.2,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: 'top 75%'
+              }
+            }
+          );
+        });
+        return () => ctx.revert();
+      }, []);
+
+      return (
+        <section id="experience" className="py-24 relative" ref={sectionRef}>
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="mb-16 reveal">
+              <span className="text-brand-orange font-space text-sm font-semibold tracking-widest uppercase">Parcours</span>
+              <h2 className="font-space text-4xl md:text-5xl font-bold text-white mt-2">Experience & Formation</h2>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                <h3 className="font-space text-xl font-semibold text-white mb-8 flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-lg bg-brand-orange/20 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                  </span>
+                  Experience Professionnelle
+                </h3>
+                <div className="relative pl-8 border-l-2 border-brand-orange/20">
+                  {EXPERIENCE.map((exp, idx) => (
+                    <div key={idx} className="exp-item relative pb-10 last:pb-0">
+                      <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-brand-dark border-2 border-brand-orange"></div>
+                      <div className="glass rounded-2xl p-6 ml-4">
+                        <span className="text-brand-orange text-sm font-semibold">{exp.period}</span>
+                        <h4 className="font-space text-lg font-bold text-white mt-1">{exp.role}</h4>
+                        <p className="text-brand-muted text-sm mb-4">{exp.company}</p>
+                        <ul className="space-y-2">
+                          {exp.points.map((point, pidx) => (
+                            <li key={pidx} className="text-brand-muted text-sm flex items-start gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-brand-orange mt-2 flex-shrink-0"></span>
+                              {point}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="font-space text-xl font-semibold text-white mb-8 flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-lg bg-brand-orange/20 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                  </span>
+                  Formation
+                </h3>
+                <div className="relative pl-8 border-l-2 border-brand-orange/20">
+                  {EDUCATION.map((edu, idx) => (
+                    <div key={idx} className="exp-item relative pb-10 last:pb-0">
+                      <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-brand-dark border-2 border-brand-orange"></div>
+                      <div className="glass rounded-2xl p-6 ml-4">
+                        <span className="text-brand-orange text-sm font-semibold">{edu.period}</span>
+                        <h4 className="font-space text-lg font-bold text-white mt-1">{edu.title}</h4>
+                        <p className="text-brand-muted text-sm mb-2">{edu.school}</p>
+                        <p className="text-brand-muted/70 text-xs">{edu.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    const Languages = () => {
+      const langs = [
+        { name: 'Arabe', level: 'Langue maternelle', percent: 100 },
+        { name: 'Francais', level: 'Intermediaire (B1)', percent: 65 },
+        { name: 'Anglais', level: 'Debutant (A2)', percent: 40 }
+      ];
+
+      return (
+        <section className="py-16 relative">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="glass rounded-3xl p-8 md:p-12">
+              <h3 className="font-space text-2xl font-bold text-white mb-8 text-center">Langues</h3>
+              <div className="grid md:grid-cols-3 gap-8">
+                {langs.map((lang) => (
+                  <div key={lang.name} className="text-center">
+                    <div className="relative w-24 h-24 mx-auto mb-4">
+                      <svg className="w-full h-full transform -rotate-90">
+                        <circle cx="48" cy="48" r="40" stroke="rgba(255,255,255,0.05)" strokeWidth="6" fill="none"/>
+                        <circle cx="48" cy="48" r="40" stroke="#FF6B35" strokeWidth="6" fill="none"
+                          strokeDasharray={`${2 * Math.PI * 40}`}
+                          strokeDashoffset={`${2 * Math.PI * 40 * (1 - lang.percent / 100)}`}
+                          strokeLinecap="round"
+                          className="transition-all duration-1000"
+                        />
+                      </svg>
+                      <span className="absolute inset-0 flex items-center justify-center font-space text-lg font-bold text-white">{lang.percent}%</span>
+                    </div>
+                    <h4 className="font-space font-semibold text-white">{lang.name}</h4>
+                    <p className="text-brand-muted text-sm">{lang.level}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    const Footer = () => {
+      return (
+        <footer className="py-16 border-t border-white/5">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid md:grid-cols-3 gap-12 mb-12">
+              <div>
+                <div className="font-space text-3xl font-bold text-white mb-4">
+                  ADLANI<span className="text-brand-orange">.</span>
+                </div>
+                <p className="text-brand-muted text-sm leading-relaxed">
+                  Developpeur Full Stack passionne par le web immersif et l'entrepreneuriat digital. Base a Temara, Maroc.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-space font-semibold text-white mb-4">Centres d'interet</h4>
+                <div className="flex flex-wrap gap-2">
+                  {['Web immersif (Three.js)', 'Veille tech (IA)', 'UI/UX Design', 'Entrepreneuriat digital'].map((interest) => (
+                    <span key={interest} className="skill-pill px-3 py-1.5 rounded-full text-xs text-brand-orange">
+                      {interest}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="font-space font-semibold text-white mb-4">Contact</h4>
+                <div className="space-y-3 text-sm">
+                  <a href="mailto:youssoufadlani@gmail.com" className="flex items-center gap-3 text-brand-muted hover:text-brand-orange transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    youssoufadlani@gmail.com
+                  </a>
+                  <a href="tel:+212777616514" className="flex items-center gap-3 text-brand-muted hover:text-brand-orange transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    +212 77 76 16 514
+                  </a>
+                  <div className="flex items-center gap-3 text-brand-muted">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Temara, Maroc
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+              <p className="text-brand-muted text-sm">© 2026 Adlani Youssouf. Tous droits reserves.</p>
+              <div className="flex items-center gap-4">
+                <a href="https://github.com" target="_blank" className="text-brand-muted hover:text-brand-orange transition-colors">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                </a>
+                <a href="https://linkedin.com" target="_blank" className="text-brand-muted hover:text-brand-orange transition-colors">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </footer>
+      );
+    };
+
+    const App = () => {
+      useEffect(() => {
+        initThree();
+        
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.utils.toArray('.reveal').forEach((el) => {
+          gsap.fromTo(el,
+            { y: 40, opacity: 0 },
+            {
+              y: 0, opacity: 1,
+              duration: 0.8,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: el,
+                start: 'top 85%',
+                toggleActions: 'play none none none'
+              }
+            }
+          );
+        });
+      }, []);
+
+      return (
+        <div className="font-inter text-brand-text">
+          <canvas id="three-canvas"></canvas>
+          <div className="content-layer">
+            <Navbar />
+            <Hero />
+            <ProjectCarousel />
+            <Skills />
+            <Experience />
+            <Languages />
+            <Footer />
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>'''

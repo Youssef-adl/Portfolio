@@ -1,0 +1,24 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE/Editor folders
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Claude Code local files (if any sensitive local configs)
+*.local.md
+.claude/agents/
+.claude/skills/
+
+# Generated research files
+research/
+
+# Local copy folder
+copy/
+
+# Taskmaster local files
+.taskmaster/

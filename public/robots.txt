@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://youssef-adl.vercel.app/sitemap.xml
