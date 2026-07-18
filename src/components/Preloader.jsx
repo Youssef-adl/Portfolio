@@ -3,144 +3,47 @@ import gsap from 'gsap';
 
 export default function Preloader({ onComplete }) {
   const containerRef = useRef(null);
-  const layer1Ref = useRef(null);
-  const layer2Ref = useRef(null);
-  const layer3Ref = useRef(null);
-  const contentRef = useRef(null);
-  const nameRef = useRef(null);
-  const statusRef = useRef(null);
-  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
-    let frame;
-    let start = null;
-    const duration = 2000;
-
-    const tick = (ts) => {
-      if (!start) start = ts;
-      const elapsed = ts - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 4); // Quartic ease out
-      setCount(Math.round(eased * 100));
-      if (progress < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-
+    if (!started) return;
+    
     const tl = gsap.timeline({
-      onComplete: () => {
-        onComplete();
-      }
+      onComplete: () => onComplete()
     });
 
-    // Staggered curtain slide-out animation when loading finishes
-    tl.set(containerRef.current, { autoAlpha: 1 })
-      .fromTo(nameRef.current?.children || [], 
-        { y: '110%', opacity: 0 }, 
-        { y: '0%', opacity: 1, duration: 1.0, ease: 'power4.out', stagger: 0.1 }, 
-        0.2
-      )
-      .fromTo(statusRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.8)
-      // Once count hits 100%, animate out
-      .to([nameRef.current?.children || [], statusRef.current], {
-        y: -40,
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power3.in',
-        stagger: 0.05
-      }, 2.1)
-      .to(layer3Ref.current, {
-        yPercent: -100,
-        duration: 1.1,
-        ease: 'power4.inOut'
-      }, 2.4)
-      .to(layer2Ref.current, {
-        yPercent: -100,
-        duration: 1.1,
-        ease: 'power4.inOut'
-      }, 2.55)
-      .to(layer1Ref.current, {
-        yPercent: -100,
-        duration: 1.1,
-        ease: 'power4.inOut'
-      }, 2.7)
-      .to(containerRef.current, {
-        autoAlpha: 0,
-        duration: 0.1
-      }, 3.8);
+    tl.to(containerRef.current, {
+      opacity: 0,
+      duration: 1,
+      ease: 'power3.inOut',
+      delay: 0.5
+    });
 
-    return () => {
-      cancelAnimationFrame(frame);
-      tl.kill();
-    };
-  }, [onComplete]);
+    return () => tl.kill();
+  }, [started, onComplete]);
 
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-preloader select-none pointer-events-none"
-      style={{ visibility: 'hidden' }}
+      className="fixed inset-0 z-[9999] select-none flex items-center justify-center bg-[#f5e3cd] text-[#1A1A1A]"
     >
-      {/* Three Colored Curtain Layers */}
-      <div
-        ref={layer1Ref}
-        className="curtain-layer bg-bg-primary"
-        style={{ zIndex: 10 }}
-      />
-      <div
-        ref={layer2Ref}
-        className="curtain-layer"
-        style={{ backgroundColor: 'var(--color-accent-light, #34d399)', zIndex: 9 }}
-      />
-      <div
-        ref={layer3Ref}
-        className="curtain-layer"
-        style={{ backgroundColor: 'var(--color-warm, #fbbf24)', zIndex: 8 }}
-      />
-
-      {/* Content overlay inside the top layer */}
-      <div 
-        ref={contentRef}
-        className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-auto"
-      >
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] glow-accent" />
-          <div className="dashed-line-h" style={{ top: '25%' }} />
-          <div className="dashed-line-h" style={{ top: '75%' }} />
-          <div className="dashed-line-v" style={{ left: '25%' }} />
-          <div className="dashed-line-v" style={{ left: '75%' }} />
-        </div>
-
-        {/* Text Reveal */}
-        <div ref={nameRef} className="relative flex flex-col items-center overflow-hidden">
-          <div className="clip-reveal">
-            <span 
-              className="display-text text-[clamp(3.5rem,10vw,8rem)] block font-extrabold uppercase tracking-tight"
-              style={{
-                background: 'var(--gradient-brand-text)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
-              }}
-            >
-              Youssef
-            </span>
-          </div>
-          <div className="clip-reveal">
-            <span className="display-text text-[clamp(3.5rem,10vw,8rem)] block font-extrabold uppercase tracking-tight text-text-primary">
-              Adlani
-            </span>
-          </div>
-        </div>
-
-        {/* Status Indicator */}
-        <div 
-          ref={statusRef} 
-          className="mt-8 mono-font text-[10px] tracking-[0.4em] uppercase text-text-muted flex items-center gap-2"
+      {!started ? (
+        <button 
+          onClick={() => setStarted(true)}
+          className="mono-font text-[12px] tracking-[0.3em] uppercase border border-[#1A1A1A] px-10 py-4 hover:bg-[#1A1A1A] hover:text-[#f5e3cd] transition-all"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
-          SYSTEM LOAD // {String(count).padStart(3, '0')}%
+          Sound On — Enter
+        </button>
+      ) : (
+        <div className="flex flex-col items-center opacity-0 animate-in fade-in duration-1000">
+          <div className="text-[10px] tracking-[0.5em] uppercase font-medium text-[#800020] mb-4">
+            Youssef Adlani presents
+          </div>
+          <div className="text-6xl font-bold uppercase tracking-tight">
+            A House that we shaped
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
-
